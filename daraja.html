@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parallel Muhit Mini App</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 10px;
+            box-sizing: border-box;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(106, 13, 173, 0.1), transparent 70%);
+            animation: pulse 10s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.2; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+        .container {
+            background: linear-gradient(145deg, #2a2a2a, #1f1f1f);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 100%;
+            width: 400px;
+            border: 1px solid rgba(106, 13, 173, 0.3);
+            backdrop-filter: blur(5px);
+            position: relative;
+            z-index: 1;
+        }
+        .subscription-info {
+            font-size: 20px;
+            margin-bottom: 25px;
+            color: #e0e0e0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+        .progress-circle {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 30px;
+        }
+        .progress-circle svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        .progress-circle circle {
+            fill: none;
+            stroke-width: 12;
+            stroke-linecap: round;
+        }
+        .progress-circle .background {
+            stroke: #444;
+        }
+        .progress-circle .progress {
+            stroke: url(#gradient);
+            stroke-dasharray: 440;
+            stroke-dashoffset: 440;
+            transition: stroke-dashoffset 0.7s ease;
+            filter: drop-shadow(0 0 10px rgba(106, 13, 173, 0.5));
+        }
+        .progress-circle .days {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        .progress-circle .label {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #ccc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .button {
+            background: linear-gradient(90deg, #6a0dad, #a855f7);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px 0;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 5px 15px rgba(106, 13, 173, 0.4);
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(106, 13, 173, 0.6);
+        }
+        .button:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 10px rgba(106, 13, 173, 0.3);
+        }
+        .button.secondary {
+            background: linear-gradient(90deg, #f97316, #facc15);
+            box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4);
+        }
+        .button.secondary:hover {
+            box-shadow: 0 8px 20px rgba(249, 115, 22, 0.6);
+        }
+        .button.secondary:active {
+            box-shadow: 0 3px 10px rgba(249, 115, 22, 0.3);
+        }
+        .payment-form {
+            display: none;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 15px;
+        }
+        .payment-form p {
+            font-size: 16px;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="subscription-info">
+            📅 Obunangizning qolgan muddati
+        </div>
+        <div class="progress-circle">
+            <svg>
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6a0dad;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <circle class="background" cx="80" cy="80" r="70"></circle>
+                <circle class="progress" id="progress-circle" cx="80" cy="80" r="70"></circle>
+            </svg>
+            <div class="days" id="subscription-days">30</div>
+            <div class="label">kun qoldi</div>
+        </div>
+        <button class="button" onclick="showPaymentForm('subscribe')">Obuna bo‘lish</button>
+        <button class="button secondary" onclick="showPaymentForm('renew')">Obunani uzaytirish</button>
+        
+        <div class="payment-form" id="payment-form">
+            <p>To‘lov jarayonini boshlash uchun quyidagi tugmani bosing:</p>
+            <button class="button" onclick="proceedToPayment()">To‘lovni amalga oshirish</button>
+        </div>
+    </div>
+
+    <script>
+        // Telegram WebApp API
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+
+        // Foydalanuvchi ma'lumotlari (vaqtincha saqlash uchun)
+        let subscriptionDays = 30;
+        const maxDays = 30; // Maksimal obuna muddati
+
+        // Obuna muddatini yangilash va progress circle’ni sozlash
+        function updateSubscription() {
+            document.getElementById('subscription-days').innerText = subscriptionDays;
+            const progress = (subscriptionDays / maxDays) * (440); // 440 - doira uzunligi (2 * PI * r)
+            document.getElementById('progress-circle').style.strokeDashoffset = 440 - progress;
+        }
+
+        // Dastlabki holatni yangilash
+        updateSubscription();
+
+        // To‘lov formasini ko‘rsatish
+        let paymentType = '';
+        function showPaymentForm(type) {
+            paymentType = type;
+            document.getElementById('payment-form').style.display = 'block';
+        }
+
+        // To‘lov jarayonini boshlash
+        function proceedToPayment() {
+            // Botga "subscribe" buyrug‘ini yuborish
+            tg.sendData('subscribe');
+            document.getElementById('payment-form').style.display = 'none';
+        }
+
+        // Telegram’dan kelgan xabarni qabul qilish (masalan, to‘lov muvaffaqiyatli bo‘lsa)
+        tg.onEvent('web_app_data', function(data) {
+            if (data === 'payment_success') {
+                subscriptionDays = paymentType === 'subscribe' ? 30 : subscriptionDays + 30;
+                updateSubscription();
+                tg.showAlert('To‘lov muvaffaqiyatli amalga oshirildi!');
+            }
+        });
+    </script>
+</body>
+</html>
