@@ -157,19 +157,6 @@
             color: #ccc;
             margin-bottom: 15px;
         }
-        .payment-step .card-input {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #444;
-            border-radius: 10px;
-            background: #333;
-            color: #fff;
-            font-size: 16px;
-        }
-        .payment-step .card-input::placeholder {
-            color: #888;
-        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -209,15 +196,7 @@
             <p>Bot subscription</p>
             <p class="description">Активация подписки на канал на 1 месяц</p>
             <p class="amount">100,000 UZS</p>
-            <button class="button" onclick="proceedToStep3()">Zaplatit 100,000 UZS</button>
-            <button class="button secondary" onclick="cancelPayment()">Отмена</button>
-        </div>
-
-        <!-- 3-bosqich: Karta ma'lumotlari oynasi -->
-        <div class="payment-step" id="payment-step-3">
-            <p>Karta orqali to‘lov</p>
-            <input type="text" class="card-input" id="card-number" placeholder="Karta raqami" maxlength="19">
-            <button class="button" onclick="submitPayment()">To‘lovni tasdiqlash</button>
+            <button class="button" onclick="initiateTelegramPayment()">Zaplatit 100,000 UZS</button>
             <button class="button secondary" onclick="cancelPayment()">Отмена</button>
         </div>
     </div>
@@ -246,7 +225,6 @@
         function hideAllSteps() {
             document.getElementById('payment-step-1').style.display = 'none';
             document.getElementById('payment-step-2').style.display = 'none';
-            document.getElementById('payment-step-3').style.display = 'none';
         }
 
         // To‘lov jarayonini boshlash
@@ -262,26 +240,10 @@
             document.getElementById('payment-step-2').style.display = 'block';
         }
 
-        // 3-bosqichga o‘tish
-        function proceedToStep3() {
-            hideAllSteps();
-            document.getElementById('payment-step-3').style.display = 'block';
-        }
-
-        // To‘lovni tasdiqlash
-        function submitPayment() {
-            const cardNumber = document.getElementById('card-number').value;
-            // Karta raqamini tekshirish (oddiy tekshirish)
-            if (cardNumber.replace(/\D/g, '').length >= 16) {
-                subscriptionDays = paymentType === 'subscribe' ? 30 : subscriptionDays + 30;
-                updateSubscription();
-                hideAllSteps();
-                tg.showAlert('To‘lov muvaffaqiyatli amalga oshirildi!');
-                // Haqiqiy to‘lov jarayoni uchun botga xabar yuborish mumkin
-                tg.sendData('payment_success');
-            } else {
-                tg.showAlert('Karta raqami to‘g‘ri kiritilmadi!');
-            }
+        // Telegram Payments API orqali to‘lovni boshlash
+        function initiateTelegramPayment() {
+            // Botga to‘lov so‘rovini yuborish
+            tg.sendData('initiate_payment');
         }
 
         // To‘lovni bekor qilish
@@ -297,6 +259,9 @@
                 updateSubscription();
                 hideAllSteps();
                 tg.showAlert('To‘lov muvaffaqiyatli amalga oshirildi!');
+            } else if (data === 'payment_failed') {
+                hideAllSteps();
+                tg.showAlert('To‘lov amalga oshirilmadi. Iltimos, qayta urinib ko‘ring.');
             }
         });
     </script>
