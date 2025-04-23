@@ -6,7 +6,10 @@ tg.ready();
 const userData = tg.initDataUnsafe.user || {};
 let subscriptionData;
 try {
-    subscriptionData = JSON.parse(tg.initDataUnsafe.start_param || "{}");
+    const rawStartParam = tg.initDataUnsafe.start_param || "{}";
+    console.log("Raw start_param:", rawStartParam); // Debugging uchun
+    subscriptionData = JSON.parse(rawStartParam);
+    console.log("Parsed subscriptionData:", subscriptionData); // Debugging uchun
 } catch (e) {
     console.error("Failed to parse start_param:", e);
     subscriptionData = {};
