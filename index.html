@@ -7,49 +7,97 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Obuna Holati</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
             font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+        p {
+            font-size: 16px;
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+        .days-left {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
         }
         .progress-bar {
             height: 20px;
             background-color: #e5e7eb;
             border-radius: 10px;
             overflow: hidden;
+            margin-bottom: 8px;
         }
         .progress {
             height: 100%;
             background: linear-gradient(to right, #3b82f6, #60a5fa);
             transition: width 0.5s ease-in-out;
         }
+        .progress-text {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+        button {
+            width: 100%;
+            background-color: #3b82f6;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2563eb;
+        }
     </style>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body class="flex items-center justify-center min-h-screen">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h1 class="text-2xl font-bold text-center text-gray-800 mb-4">📅 Obuna Holati</h1>
-        <div id="subscription-info" class="text-center">
-            <p id="end-date" class="text-lg text-gray-600 mb-2">Obunangiz: Hali obuna yo‘q</p>
-            <p id="days-left" class="text-lg font-semibold text-gray-800 mb-4">Qolgan kunlar: 0</p>
+<body>
+    <div class="container">
+        <h1>📅 Obuna Holati</h1>
+        <div id="subscription-info">
+            <p id="end-date">Obunangiz: Hali obuna yo‘q</p>
+            <p id="days-left" class="days-left">Qolgan kunlar: 0</p>
             <div class="progress-bar">
                 <div id="progress" class="progress" style="width: 0%"></div>
             </div>
-            <p id="progress-text" class="text-sm text-gray-500 mt-2">Progress: 0%</p>
+            <p id="progress-text" class="progress-text">Progress: 0%</p>
         </div>
-        <button id="subscribe-btn" class="mt-6 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
-            Obuna bo‘lish
-        </button>
+        <button id="subscribe-btn">Obuna bo‘lish</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
 
-        // Foydalanuvchi ma’lumotlarini qabul qilish
-        const userData = tg.initDataUnsafe.user;
-        const subscriptionData = tg.initDataUnsafe.query_id ? JSON.parse(decodeURIComponent(tg.initDataUnsafe.query_id)) : {};
+        // URL’dan ma’lumotlarni olish
+        const urlParams = new URLSearchParams(window.location.search);
+        const subscriptionData = urlParams.get('data') ? JSON.parse(urlParams.get('data')) : {};
 
         // Obuna ma’lumotlarini ko‘rsatish
         const endDate = subscriptionData.end_date || "Hali obuna yo‘q";
