@@ -7,9 +7,18 @@ console.log("Telegram Web App initialized:", tg.initDataUnsafe); // Debugging uc
 
 let subscriptionData = {};
 try {
-    const rawStartParam = tg.initDataUnsafe.start_param || "{}";
+    const rawStartParam = tg.initDataUnsafe.start_param || "";
     console.log("Raw start_param:", rawStartParam); // Debugging uchun
-    subscriptionData = JSON.parse(rawStartParam);
+
+    // start_param ni parse qilish (end_date|days_left|progress)
+    const params = rawStartParam.split("|");
+    if (params.length === 3) {
+        subscriptionData = {
+            end_date: params[0],
+            days_left: parseInt(params[1], 10),
+            progress: parseInt(params[2], 10)
+        };
+    }
     console.log("Parsed subscriptionData:", subscriptionData); // Debugging uchun
 } catch (e) {
     console.error("Failed to parse start_param:", e);
