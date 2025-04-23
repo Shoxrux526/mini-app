@@ -99,6 +99,8 @@
         const urlParams = new URLSearchParams(window.location.search);
         const subscriptionData = urlParams.get('data') ? JSON.parse(urlParams.get('data')) : {};
 
+        console.log("Received subscription data:", subscriptionData); // Debugging uchun
+
         // Obuna ma’lumotlarini ko‘rsatish
         const endDate = subscriptionData.end_date || "Hali obuna yo‘q";
         const daysLeft = subscriptionData.days_left || 0;
