@@ -4,9 +4,15 @@ tg.ready();
 
 // Botdan kelgan ma'lumotlarni olish
 const userData = tg.initDataUnsafe.user || {};
-const subscriptionData = JSON.parse(tg.initDataUnsafe.start_param || "{}");
+let subscriptionData;
+try {
+    subscriptionData = JSON.parse(tg.initDataUnsafe.start_param || "{}");
+} catch (e) {
+    console.error("Failed to parse start_param:", e);
+    subscriptionData = {};
+}
 
-const endDate = subscriptionData.end_date || "Noma'lum";
+const endDate = subscriptionData.end_date || "Hali obuna yo‘q";
 const daysLeft = subscriptionData.days_left || 0;
 const progress = subscriptionData.progress || 0;
 
