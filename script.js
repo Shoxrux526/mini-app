@@ -24,22 +24,24 @@ async function fetchSubscriptionData(userId) {
 const userId = tg.initDataUnsafe.start_param || tg.initDataUnsafe.user?.id || "";
 console.log("User ID:", userId);
 
-// Ma'lumotlarni olish
-if (userId) {
-    await fetchSubscriptionData(userId);
-}
+// Ma'lumotlarni olish uchun async funksiyani ishga tushirish
+(async () => {
+    if (userId) {
+        await fetchSubscriptionData(userId);
+    }
 
-// Ma'lumotlarni ko'rsatish
-const endDate = subscriptionData.end_date || "Hali obuna yo‘q";
-const daysLeft = subscriptionData.days_left !== undefined ? subscriptionData.days_left : 0;
-const progress = subscriptionData.progress !== undefined ? subscriptionData.progress : 0;
+    // Ma'lumotlarni ko'rsatish
+    const endDate = subscriptionData.end_date || "Hali obuna yo‘q";
+    const daysLeft = subscriptionData.days_left !== undefined ? subscriptionData.days_left : 0;
+    const progress = subscriptionData.progress !== undefined ? subscriptionData.progress : 0;
 
-// Elementlarni yangilash
-console.log("Updating UI with:", { endDate, daysLeft, progress });
-document.getElementById("end-date").textContent = endDate;
-document.getElementById("days-left").textContent = daysLeft;
-document.getElementById("progress-percent").textContent = progress;
-document.getElementById("progress-bar").style.width = `${progress}%`;
+    // Elementlarni yangilash
+    console.log("Updating UI with:", { endDate, daysLeft, progress });
+    document.getElementById("end-date").textContent = endDate;
+    document.getElementById("days-left").textContent = daysLeft;
+    document.getElementById("progress-percent").textContent = progress;
+    document.getElementById("progress-bar").style.width = `${progress}%`;
+})();
 
 // "Obuna bo‘lish" tugmasi
 document.getElementById("subscribe-btn").addEventListener("click", () => {
