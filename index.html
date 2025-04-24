@@ -131,6 +131,8 @@
             // MainButton bosilganda to‘lov jarayonini boshlash
             Telegram.WebApp.MainButton.onClick(() => {
                 console.log("MainButton bosildi, to‘lov jarayoni boshlanmoqda");
+                // Foydalanuvchiga ko‘rsatma ko‘rsatish
+                alert("Iltimos, keyingi qadamda to‘lovni tasdiqlang");
                 // To‘lov so‘rovini botga yuborish
                 Telegram.WebApp.sendData(JSON.stringify({
                     action: "initiate_payment",
