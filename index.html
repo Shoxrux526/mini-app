@@ -131,7 +131,13 @@
             // MainButton bosilganda to‘lov jarayonini boshlash
             Telegram.WebApp.MainButton.onClick(() => {
                 console.log("MainButton bosildi, to‘lov jarayoni boshlanmoqda");
-                Telegram.WebApp.sendData('subscribe');
+                // To‘lov so‘rovini botga yuborish
+                Telegram.WebApp.sendData(JSON.stringify({
+                    action: "initiate_payment",
+                    amount: 100000,
+                    currency: "UZS",
+                    description: "Maxsus kanalga 1 oylik obuna faollashtirish"
+                }));
                 Telegram.WebApp.MainButton.hide(); // To‘lovdan so‘ng tugmani yashirish
             });
 
