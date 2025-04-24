@@ -72,54 +72,60 @@
     </div>
 
     <script>
-        // Telegram Web App obyektini tekshirish
-        if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
-            console.error("Telegram Web App scripti yuklanmadi yoki ishlamayapti");
-        } else {
+        // Telegram Web App muhitini tekshirish
+        window.addEventListener('load', () => {
+            if (typeof window.Telegram === 'undefined' || !window.Telegram.WebApp) {
+                console.error("Telegram Web App scripti yuklanmadi yoki ishlamayapti. Telegram muhitida ekanligingizni tekshiring.");
+                return;
+            }
+
             console.log("Telegram Web App muvaffaqiyatli yuklandi");
-            Telegram.WebApp.ready();
-        }
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand(); // Mini App’ni to‘liq ekran qilish
 
-        // URL'dan data parametrini olish va dekodlash
-        const urlParams = new URLSearchParams(window.location.search);
-        const encodedData = urlParams.get('data');
-        let subscriptionData = { end_date: "Hali obuna yo‘q", days_left: 0, progress: 0 };
+            // URL'dan data parametrini olish va dekodlash
+            const urlParams = new URLSearchParams(window.location.search);
+            const encodedData = urlParams.get('data');
+            let subscriptionData = { end_date: "Hali obuna yo‘q", days_left: 0, progress: 0 };
 
-        if (encodedData) {
-            try {
-                subscriptionData = JSON.parse(decodeURIComponent(encodedData));
-                console.log("Received subscription data:", subscriptionData);
-            } catch (e) {
-                console.error("Failed to parse subscription data:", e);
+            if (encodedData) {
+                try {
+                    subscriptionData = JSON.parse(decodeURIComponent(encodedData));
+                    console.log("Received subscription data:", subscriptionData);
+                } catch (e) {
+                    console.error("Failed to parse subscription data:", e);
+                }
             }
-        }
 
-        // Ma'lumotlarni sahifaga joylashtirish
-        document.getElementById('endDate').innerText = subscriptionData.end_date;
-        document.getElementById('daysLeft').innerText = subscriptionData.days_left;
-        document.getElementById('progress').innerText = subscriptionData.progress;
-        document.getElementById('progressBar').style.width = subscriptionData.progress + '%';
+            // Ma'lumotlarni sahifaga joylashtirish
+            document.getElementById('endDate').innerText = subscriptionData.end_date;
+            document.getElementById('daysLeft').innerText = subscriptionData.days_left;
+            document.getElementById('progress').innerText = subscriptionData.progress;
+            document.getElementById('progressBar').style.width = subscriptionData.progress + '%';
 
-        // Tugmalar uchun event listenerlar
-        const subscribeButton = document.getElementById('subscribeButton');
-        const extendButton = document.getElementById('extendButton');
+            // Tugmalar uchun event listenerlar
+            const subscribeButton = document.getElementById('subscribeButton');
+            const extendButton = document.getElementById('extendButton');
 
-        subscribeButton.addEventListener('click', () => {
-            try {
-                Telegram.WebApp.sendData('subscribe');
-                console.log("Obuna bo‘lish tugmasi bosildi, ma'lumot yuborildi: subscribe");
-            } catch (e) {
-                console.error("Obuna bo‘lish tugmasi ishlamayapti:", e);
-            }
-        });
+            subscribeButton.addEventListener('click', () => {
+                try {
+                    console.log("Obuna bo‘lish tugmasi bosildi");
+                    window.Telegram.WebApp.sendData('subscribe');
+                    console.log("Ma'lumot yuborildi: subscribe");
+                } catch (e) {
+                    console.error("Obuna bo‘lish tugmasi ishlamayapti:", e);
+                }
+            });
 
-        extendButton.addEventListener('click', () => {
-            try {
-                Telegram.WebApp.sendData('subscribe');
-                console.log("Obunani uzaytirish tugmasi bosildi, ma'lumot yuborildi: subscribe");
-            } catch (e) {
-                console.error("Obunani uzaytirish tugmasi ishlamayapti:", e);
-            }
+            extendButton.addEventListener('click', () => {
+                try {
+                    console.log("Obunani uzaytirish tugmasi bosildi");
+                    window.Telegram.WebApp.sendData('subscribe');
+                    console.log("Ma'lumot yuborildi: subscribe");
+                } catch (e) {
+                    console.error("Obunani uzaytirish tugmasi ishlamayapti:", e);
+                }
+            });
         });
     </script>
 </body>
