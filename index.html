@@ -91,39 +91,24 @@
         const urlParams = new URLSearchParams(window.location.search);
         const encodedData = urlParams.get('data');
 
-        if (!encodedData && isTelegramInitialized) {
-            // Agar data parametri bo‘lmasa, botga "init" yuboramiz
-            try {
-                Telegram.WebApp.sendData('init');
-                console.log("Data parametri topilmadi, botga 'init' yuborildi");
-                // Sahifani default holatda ko‘rsatish
-                document.getElementById('endDate').innerText = subscriptionData.end_date;
-                document.getElementById('daysLeft').innerText = subscriptionData.days_left;
-                document.getElementById('progress').innerText = subscriptionData.progress;
-                document.getElementById('progressBar').style.width = subscriptionData.progress + '%';
-            } catch (e) {
-                console.error("Botga 'init' yuborishda xatolik:", e);
+        // Agar data parametri bo‘lsa, uni qayta ishlash
+        try {
+            if (encodedData) {
+                subscriptionData = JSON.parse(decodeURIComponent(encodedData));
+                console.log("Received subscription data:", subscriptionData);
+            } else {
+                console.log("Data parametri topilmadi, default qiymatlar ishlatiladi");
             }
-        } else {
-            // Agar data parametri bo‘lsa, uni qayta ishlash
-            try {
-                if (encodedData) {
-                    subscriptionData = JSON.parse(decodeURIComponent(encodedData));
-                    console.log("Received subscription data:", subscriptionData);
-                } else {
-                    console.log("Data parametri topilmadi, default qiymatlar ishlatiladi");
-                }
-            } catch (e) {
-                console.error("Data parametrini parse qilishda xatolik:", e);
-                subscriptionData = { end_date: "Hali obuna yo‘q", days_left: 0, progress: 0 };
-            }
-
-            // Ma'lumotlarni sahifaga joylashtirish
-            document.getElementById('endDate').innerText = subscriptionData.end_date;
-            document.getElementById('daysLeft').innerText = subscriptionData.days_left;
-            document.getElementById('progress').innerText = subscriptionData.progress;
-            document.getElementById('progressBar').style.width = subscriptionData.progress + '%';
+        } catch (e) {
+            console.error("Data parametrini parse qilishda xatolik:", e);
+            subscriptionData = { end_date: "Hali obuna yo‘q", days_left: 0, progress: 0 };
         }
+
+        // Ma'lumotlarni sahifaga joylashtirish
+        document.getElementById('endDate').innerText = subscriptionData.end_date;
+        document.getElementById('daysLeft').innerText = subscriptionData.days_left;
+        document.getElementById('progress').innerText = subscriptionData.progress;
+        document.getElementById('progressBar').style.width = subscriptionData.progress + '%';
 
         // Tugmalar uchun event listenerlar
         const subscribeButton = document.getElementById('subscribeButton');
