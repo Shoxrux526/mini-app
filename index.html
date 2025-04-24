@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daraja - Obuna Holati</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -71,6 +72,14 @@
     </div>
 
     <script>
+        // Telegram Web App obyektini tekshirish
+        if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
+            console.error("Telegram Web App scripti yuklanmadi yoki ishlamayapti");
+        } else {
+            console.log("Telegram Web App muvaffaqiyatli yuklandi");
+            Telegram.WebApp.ready();
+        }
+
         // URL'dan data parametrini olish va dekodlash
         const urlParams = new URLSearchParams(window.location.search);
         const encodedData = urlParams.get('data');
@@ -91,20 +100,27 @@
         document.getElementById('progress').innerText = subscriptionData.progress;
         document.getElementById('progressBar').style.width = subscriptionData.progress + '%';
 
-        // Telegram WebApp integratsiyasi
+        // Tugmalar uchun event listenerlar
         const subscribeButton = document.getElementById('subscribeButton');
         const extendButton = document.getElementById('extendButton');
 
         subscribeButton.addEventListener('click', () => {
-            Telegram.WebApp.sendData('subscribe');
+            try {
+                Telegram.WebApp.sendData('subscribe');
+                console.log("Obuna bo‘lish tugmasi bosildi, ma'lumot yuborildi: subscribe");
+            } catch (e) {
+                console.error("Obuna bo‘lish tugmasi ishlamayapti:", e);
+            }
         });
 
         extendButton.addEventListener('click', () => {
-            Telegram.WebApp.sendData('subscribe'); // Xuddi shu jarayon, obuna uzaytirish uchun
+            try {
+                Telegram.WebApp.sendData('subscribe');
+                console.log("Obunani uzaytirish tugmasi bosildi, ma'lumot yuborildi: subscribe");
+            } catch (e) {
+                console.error("Obunani uzaytirish tugmasi ishlamayapti:", e);
+            }
         });
-
-        // Telegram WebApp-ni ishga tushirish
-        Telegram.WebApp.ready();
     </script>
 </body>
 </html>
