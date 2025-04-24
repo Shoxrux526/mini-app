@@ -51,17 +51,8 @@
             font-size: 16px;
             width: 48%;
         }
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        button:hover:not(:disabled) {
+        button:hover {
             background-color: #006699;
-        }
-        .error-message {
-            color: red;
-            margin-top: 10px;
-            display: none;
         }
     </style>
 </head>
@@ -75,53 +66,25 @@
         </div>
         <p><strong>Progress:</strong> <span id="progress">0</span>%</p>
         <div class="button-container">
-            <button id="subscribeButton" disabled>Obuna bo‘lish</button>
-            <button id="extendButton" disabled>Obunani uzaytirish</button>
+            <button id="subscribeButton">Obuna bo‘lish</button>
+            <button id="extendButton">Obunani uzaytirish</button>
         </div>
-        <p class="error-message" id="errorMessage">Bu ilova faqat Telegram orqali ishlaydi. Iltimos, Telegram’da oching.</p>
     </div>
 
     <script>
-        // Telegram Web App-ni ishga tushirish va kontekstni tekshirish
-        let isTelegramInitialized = false;
-
+        // Telegram Web App-ni ishga tushirish
         function initializeTelegramWebApp() {
             if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
                 console.error("Telegram Web App scripti yuklanmadi yoki ishlamayapti");
                 return false;
             }
-
-            try {
-                Telegram.WebApp.ready();
-                if (!Telegram.WebApp.initDataUnsafe || !Telegram.WebApp.initDataUnsafe.user) {
-                    console.error("Telegram Web App konteksti topilmadi");
-                    return false;
-                }
-                console.log("Telegram Web App muvaffaqiyatli yuklandi va kontekst mavjud");
-                return true;
-            } catch (e) {
-                console.error("Telegram Web App-ni ishga tushirishda xatolik:", e);
-                return false;
-            }
+            console.log("Telegram Web App muvaffaqiyatli yuklandi");
+            Telegram.WebApp.ready();
+            return true;
         }
 
         // Telegram Web App-ni ishga tushirish
-        isTelegramInitialized = initializeTelegramWebApp();
-
-        // Tugmalarni faollashtirish yoki o'chirish
-        const subscribeButton = document.getElementById('subscribeButton');
-        const extendButton = document.getElementById('extendButton');
-        const errorMessage = document.getElementById('errorMessage');
-
-        if (isTelegramInitialized) {
-            subscribeButton.disabled = false;
-            extendButton.disabled = false;
-            errorMessage.style.display = 'none';
-        } else {
-            subscribeButton.disabled = true;
-            extendButton.disabled = true;
-            errorMessage.style.display = 'block';
-        }
+        const isTelegramInitialized = initializeTelegramWebApp();
 
         // URL'dan data parametrini olish va dekodlash
         let subscriptionData = { end_date: "Hali obuna yo‘q", days_left: 0, progress: 0 };
@@ -136,6 +99,8 @@
             }
         } catch (e) {
             console.error("Data parametrini parse qilishda xatolik:", e);
+            // Xatolik yuz bersa, default qiymatlarni ishlatamiz
+            subscriptionData = { end_date: "Hali obuna yo‘q", days_left: 0, progress: 0 };
         }
 
         // Ma'lumotlarni sahifaga joylashtirish
@@ -145,31 +110,33 @@
         document.getElementById('progressBar').style.width = subscriptionData.progress + '%';
 
         // Tugmalar uchun event listenerlar
-        subscribeButton.addEventListener('click', () => {
-            if (!isTelegramInitialized) {
-                console.error("Telegram Web App ishga tushmadi, subscribe tugmasi ishlamaydi");
-                return;
-            }
-            try {
-                Telegram.WebApp.sendData('subscribe');
-                console.log("Obuna bo‘lish tugmasi bosildi, ma'lumot yuborildi: subscribe");
-            } catch (e) {
-                console.error("Obuna bo‘lish tugmasi ishlamayapti:", e);
-            }
-        });
+        const subscribeButton = document.getElementById('subscribeButton');
+        const extendButton = document.getElementById('extendButton');
 
-        extendButton.addEventListener('click', () => {
-            if (!isTelegramInitialized) {
-                console.error("Telegram Web App ishga tushmadi, extend tugmasi ishlamaydi");
-                return;
-            }
-            try {
-                Telegram.WebApp.sendData('subscribe');
-                console.log("Obunani uzaytirish tugmasi bosildi, ma'lumot yuborildi: subscribe");
-            } catch (e) {
-                console.error("Obunani uzaytirish tugmasi ishlamayapti:", e);
-            }
-        });
+        // Tugmalar faqat Telegram Web App ishga tushgan bo‘lsa ishlaydi
+        if (isTelegramInitialized) {
+            subscribeButton.addEventListener('click', () => {
+                try {
+                    Telegram.WebApp.sendData('subscribe');
+                    console.log("Obuna bo‘lish tugmasi bosildi, ma'lumot yuborildi: subscribe");
+                } catch (e) {
+                    console.error("Obuna bo‘lish tugmasi ishlamayapti:", e);
+                }
+            });
+
+            extendButton.addEventListener('click', () => {
+                try {
+                    Telegram.WebApp.sendData('subscribe');
+                    console.log("Obunani uzaytirish tugmasi bosildi, ma'lumot yuborildi: subscribe");
+                } catch (e) {
+                    console.error("Obunani uzaytirish tugmasi ishlamayapti:", e);
+                }
+            });
+        } else {
+            console.error("Telegram Web App ishga tushmadi, tugmalar ishlamaydi");
+            subscribeButton.disabled = true;
+            extendButton.disabled = true;
+        }
     </script>
 </body>
 </html>
