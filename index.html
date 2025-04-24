@@ -116,42 +116,49 @@
         const subscribeButton = document.getElementById('subscribeButton');
         const extendButton = document.getElementById('extendButton');
 
-        // MainButton sozlamalari
+        // To‘lov havolasini generatsiya qilish
+        function generatePaymentLink(userId, amount, orderId) {
+            // Payme to‘lov havolasini generatsiya qilish
+            const merchantId = "YOUR_MERCHANT_ID"; // Payme’dan olingan Merchant ID
+            const returnUrl = encodeURIComponent(`https://t.me/tibbiydarajabot?start=verify_payment_${orderId}`);
+            const paymentUrl = `https://payme.uz/invoice?merchant_id=${merchantId}&amount=${amount}&order_id=${orderId}&return_url=${returnUrl}`;
+            return paymentUrl;
+        }
+
+        // To‘lov jarayonini boshlash
+        function initiatePayment(action) {
+            const userId = Telegram.WebApp.initDataUnsafe.user ? Telegram.WebApp.initDataUnsafe.user.id : "unknown";
+            const orderId = `${userId}_${Date.now()}`; // Unikal order ID
+            const amount = 100000; // 100 000 UZS
+
+            // To‘lov havolasini generatsiya qilish
+            const paymentUrl = generatePaymentLink(userId, amount, orderId);
+            console.log("To‘lov havolasi:", paymentUrl);
+
+            // Botga to‘lov ma’lumotlarini yuborish (keyin tasdiqlash uchun)
+            Telegram.WebApp.sendData(JSON.stringify({
+                action: "store_payment",
+                user_id: userId,
+                order_id: orderId,
+                amount: amount,
+                currency: "UZS",
+                description: "Maxsus kanalga 1 oylik obuna faollashtirish"
+            }));
+
+            // To‘lov sahifasini ochish
+            Telegram.WebApp.openLink(paymentUrl);
+        }
+
+        // Tugmalar bosilganda to‘lov jarayonini boshlash
         if (isTelegramInitialized) {
-            // MainButton-ni boshlang‘ich holatda yashirish
-            Telegram.WebApp.MainButton.hide();
-
-            // MainButton-ni sozlash
-            Telegram.WebApp.MainButton.setText("To‘lov qilish (100 000 UZS)");
-            Telegram.WebApp.MainButton.setParams({
-                color: "#0088cc",
-                text_color: "#ffffff"
-            });
-
-            // MainButton bosilganda to‘lov jarayonini boshlash
-            Telegram.WebApp.MainButton.onClick(() => {
-                console.log("MainButton bosildi, to‘lov jarayoni boshlanmoqda");
-                // Foydalanuvchiga ko‘rsatma ko‘rsatish
-                alert("Iltimos, keyingi qadamda to‘lovni tasdiqlang");
-                // To‘lov so‘rovini botga yuborish
-                Telegram.WebApp.sendData(JSON.stringify({
-                    action: "initiate_payment",
-                    amount: 100000,
-                    currency: "UZS",
-                    description: "Maxsus kanalga 1 oylik obuna faollashtirish"
-                }));
-                Telegram.WebApp.MainButton.hide(); // To‘lovdan so‘ng tugmani yashirish
-            });
-
-            // Tugmalar bosilganda MainButton-ni ko‘rsatish
             subscribeButton.addEventListener('click', () => {
-                console.log("Obuna bo‘lish tugmasi bosildi, MainButton ko‘rsatilmoqda");
-                Telegram.WebApp.MainButton.show();
+                console.log("Obuna bo‘lish tugmasi bosildi");
+                initiatePayment("subscribe");
             });
 
             extendButton.addEventListener('click', () => {
-                console.log("Obunani uzaytirish tugmasi bosildi, MainButton ko‘rsatilmoqda");
-                Telegram.WebApp.MainButton.show();
+                console.log("Obunani uzaytirish tugmasi bosildi");
+                initiatePayment("extend");
             });
         } else {
             console.error("Telegram Web App ishga tushmadi, tugmalar ishlamaydi");
