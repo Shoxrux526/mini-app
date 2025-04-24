@@ -99,7 +99,6 @@
             }
         } catch (e) {
             console.error("Data parametrini parse qilishda xatolik:", e);
-            // Xatolik yuz bersa, default qiymatlarni ishlatamiz
             subscriptionData = { end_date: "Hali obuna yo‘q", days_left: 0, progress: 0 };
         }
 
@@ -113,12 +112,14 @@
         const subscribeButton = document.getElementById('subscribeButton');
         const extendButton = document.getElementById('extendButton');
 
-        // Tugmalar faqat Telegram Web App ishga tushgan bo‘lsa ishlaydi
+        // Botga maxsus URL orqali to‘lov jarayonini boshlash
+        const paymentUrl = "https://t.me/tibbiydarajabot?start=subscribe_payment";
+
         if (isTelegramInitialized) {
             subscribeButton.addEventListener('click', () => {
                 try {
-                    Telegram.WebApp.sendData('subscribe');
-                    console.log("Obuna bo‘lish tugmasi bosildi, ma'lumot yuborildi: subscribe");
+                    Telegram.WebApp.openLink(paymentUrl);
+                    console.log("Obuna bo‘lish tugmasi bosildi, to‘lov jarayoni boshlandi");
                 } catch (e) {
                     console.error("Obuna bo‘lish tugmasi ishlamayapti:", e);
                 }
@@ -126,8 +127,8 @@
 
             extendButton.addEventListener('click', () => {
                 try {
-                    Telegram.WebApp.sendData('subscribe');
-                    console.log("Obunani uzaytirish tugmasi bosildi, ma'lumot yuborildi: subscribe");
+                    Telegram.WebApp.openLink(paymentUrl);
+                    console.log("Obunani uzaytirish tugmasi bosildi, to‘lov jarayoni boshlandi");
                 } catch (e) {
                     console.error("Obunani uzaytirish tugmasi ishlamayapti:", e);
                 }
