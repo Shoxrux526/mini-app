@@ -54,6 +54,10 @@
         button:hover {
             background-color: #006699;
         }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -108,30 +112,38 @@
         document.getElementById('progress').innerText = subscriptionData.progress;
         document.getElementById('progressBar').style.width = subscriptionData.progress + '%';
 
-        // Tugmalar uchun event listenerlar
+        // Tugmalar
         const subscribeButton = document.getElementById('subscribeButton');
         const extendButton = document.getElementById('extendButton');
 
-        // Botga maxsus URL orqali to‘lov jarayonini boshlash
-        const paymentUrl = "https://t.me/tibbiydarajabot?start=subscribe_payment";
-
+        // MainButton sozlamalari
         if (isTelegramInitialized) {
+            // MainButton-ni boshlang‘ich holatda yashirish
+            Telegram.WebApp.MainButton.hide();
+
+            // MainButton-ni sozlash
+            Telegram.WebApp.MainButton.setText("To‘lov qilish (100 000 UZS)");
+            Telegram.WebApp.MainButton.setParams({
+                color: "#0088cc",
+                text_color: "#ffffff"
+            });
+
+            // MainButton bosilganda to‘lov jarayonini boshlash
+            Telegram.WebApp.MainButton.onClick(() => {
+                console.log("MainButton bosildi, to‘lov jarayoni boshlanmoqda");
+                Telegram.WebApp.sendData('subscribe');
+                Telegram.WebApp.MainButton.hide(); // To‘lovdan so‘ng tugmani yashirish
+            });
+
+            // Tugmalar bosilganda MainButton-ni ko‘rsatish
             subscribeButton.addEventListener('click', () => {
-                try {
-                    Telegram.WebApp.openLink(paymentUrl);
-                    console.log("Obuna bo‘lish tugmasi bosildi, to‘lov jarayoni boshlandi");
-                } catch (e) {
-                    console.error("Obuna bo‘lish tugmasi ishlamayapti:", e);
-                }
+                console.log("Obuna bo‘lish tugmasi bosildi, MainButton ko‘rsatilmoqda");
+                Telegram.WebApp.MainButton.show();
             });
 
             extendButton.addEventListener('click', () => {
-                try {
-                    Telegram.WebApp.openLink(paymentUrl);
-                    console.log("Obunani uzaytirish tugmasi bosildi, to‘lov jarayoni boshlandi");
-                } catch (e) {
-                    console.error("Obunani uzaytirish tugmasi ishlamayapti:", e);
-                }
+                console.log("Obunani uzaytirish tugmasi bosildi, MainButton ko‘rsatilmoqda");
+                Telegram.WebApp.MainButton.show();
             });
         } else {
             console.error("Telegram Web App ishga tushmadi, tugmalar ishlamaydi");
