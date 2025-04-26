@@ -13,28 +13,52 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            background: linear-gradient(180deg, #1e1e2f 0%, #1e1e2f 100%);
+            color: #fff;
         }
         .container {
-            background-color: white;
+            background: rgba(255, 255, 255, 0.05);
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
             text-align: center;
             width: 300px;
+            backdrop-filter: blur(10px);
         }
-        .progress-bar {
+        .circle-progress {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+        }
+        .circle-bg {
             width: 100%;
-            background-color: #e0e0e0;
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 10px 0;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(#00c4ff 0% 0%, #333 0% 100%);
+            box-shadow: 0 0 20px rgba(0, 196, 255, 0.5);
         }
-        .progress {
-            height: 20px;
-            background-color: #4CAF50;
-            width: 0;
-            border-radius: 5px;
+        .circle {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 180px;
+            height: 180px;
+            background: #1e1e2f;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .circle h2 {
+            font-size: 36px;
+            margin: 0;
+            color: #00c4ff;
+        }
+        .circle p {
+            font-size: 14px;
+            margin: 5px 0;
+            color: #aaa;
         }
         .button-container {
             display: flex;
@@ -42,29 +66,32 @@
             margin-top: 20px;
         }
         button {
-            background-color: #0088cc;
+            background: linear-gradient(90deg, #00c4ff, #007bff);
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 16px;
             width: 48%;
+            transition: background 0.3s;
         }
         button:hover {
-            background-color: #006699;
+            background: linear-gradient(90deg, #007bff, #00c4ff);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Obuna Holati</h2>
-        <p><strong>Obunangiz:</strong> <span id="endDate">Hali obuna yo‘q</span></p>
-        <p><strong>Qolgan kunlar:</strong> <span id="daysLeft">0</span></p>
-        <div class="progress-bar">
-            <div class="progress" id="progressBar"></div>
+        <div class="circle-progress">
+            <div class="circle-bg" id="circleBg"></div>
+            <div class="circle">
+                <h2 id="daysLeft">0</h2>
+                <p><strong>Obunangiz:</strong> <span id="endDate">Hali obuna yo‘q</span></p>
+                <p><strong>Progress:</strong> <span id="progress">0</span>%</p>
+            </div>
         </div>
-        <p><strong>Progress:</strong> <span id="progress">0</span>%</p>
         <div class="button-container">
             <button id="subscribeButton">Obuna bo‘lish</button>
             <button id="extendButton">Obunani uzaytirish</button>
@@ -108,7 +135,7 @@
         document.getElementById('endDate').innerText = subscriptionData.end_date;
         document.getElementById('daysLeft').innerText = subscriptionData.days_left;
         document.getElementById('progress').innerText = subscriptionData.progress;
-        document.getElementById('progressBar').style.width = subscriptionData.progress + '%';
+        document.getElementById('circleBg').style.background = `conic-gradient(#00c4ff 0% ${subscriptionData.progress}%, #333 ${subscriptionData.progress}% 100%)`;
 
         // Tugmalar uchun event listenerlar
         const subscribeButton = document.getElementById('subscribeButton');
