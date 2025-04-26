@@ -89,7 +89,6 @@
             <div class="circle">
                 <h2 id="daysLeft">0</h2>
                 <p><strong>Obunangiz:</strong> <span id="endDate">Hali obuna yo‘q</span></p>
-                <p><strong>Progress:</strong> <span id="progress">0</span>%</p>
             </div>
         </div>
         <div class="button-container">
@@ -134,7 +133,6 @@
         // Ma'lumotlarni sahifaga joylashtirish
         document.getElementById('endDate').innerText = subscriptionData.end_date;
         document.getElementById('daysLeft').innerText = subscriptionData.days_left;
-        document.getElementById('progress').innerText = subscriptionData.progress;
         document.getElementById('circleBg').style.background = `conic-gradient(#00c4ff 0% ${subscriptionData.progress}%, #333 ${subscriptionData.progress}% 100%)`;
 
         // Tugmalar uchun event listenerlar
