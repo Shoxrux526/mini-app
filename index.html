@@ -50,9 +50,18 @@
             align-items: center;
             flex-direction: column;
         }
-        .circle h2 {
+        .days-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .days-container h2 {
             font-size: 36px;
             margin: 0;
+            color: #00c4ff;
+        }
+        .days-container span {
+            font-size: 16px;
             color: #00c4ff;
         }
         .circle p {
@@ -87,7 +96,10 @@
         <div class="circle-progress">
             <div class="circle-bg" id="circleBg"></div>
             <div class="circle">
-                <h2 id="daysLeft">0</h2>
+                <div class="days-container">
+                    <h2 id="daysLeft">0</h2>
+                    <span>kun</span>
+                </div>
                 <p><strong>Obunangiz:</strong> <span id="endDate">Hali obuna yo‘q</span></p>
             </div>
         </div>
