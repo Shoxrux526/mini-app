@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parallel Muhit</title>
+    <!-- Telegram Web App scriptini qo‘lda yuklash -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -190,7 +192,7 @@
 
     <!-- Uchinchi sahifa: Karta ma'lumotlari kiritish -->
     <div id="card-input-page" class="container hidden">
-        <h1>Bank kartasi ma'lumotlarini kiriting</h1>
+        <h1>Bank kartasi ma'lumotlarini kiriting</td>
         <div class="card-inputs">
             <label for="card-number">Karta raqami</label>
             <input type="text" id="card-number" placeholder="0000 0000 0000 0000" maxlength="19">
@@ -218,18 +220,26 @@
 
         // URL parametridan subscription_data ni olish
         function getSubscriptionDataFromURL() {
+            console.log("Current URL:", window.location.href);
+            console.log("URL Search Params:", window.location.search);
+            
             const urlParams = new URLSearchParams(window.location.search);
             const data = urlParams.get("data");
+            console.log("Raw data param:", data);
+
             if (data) {
                 try {
                     const decodedData = decodeURIComponent(data);
+                    console.log("Decoded data:", decodedData);
                     const subscriptionData = JSON.parse(decodedData);
-                    console.log("Subscription data from URL:", subscriptionData);
+                    console.log("Parsed subscription data:", subscriptionData);
                     return subscriptionData;
                 } catch (error) {
                     console.error("Error parsing subscription data from URL:", error);
                     return null;
                 }
+            } else {
+                console.error("No 'data' parameter found in URL");
             }
             return null;
         }
@@ -237,11 +247,14 @@
         // Obuna holatini ko‘rsatish
         function displaySubscriptionData() {
             const subscriptionData = getSubscriptionDataFromURL();
+            const daysLeftElement = document.getElementById("days-left");
+            
             if (subscriptionData && subscriptionData.days_left !== undefined) {
-                document.getElementById("days-left").innerText = subscriptionData.days_left;
+                console.log("Setting days_left to:", subscriptionData.days_left);
+                daysLeftElement.innerText = subscriptionData.days_left;
             } else {
-                console.error("Subscription data not found in URL parameters");
-                document.getElementById("days-left").innerText = "0";
+                console.error("Subscription data not found or invalid");
+                daysLeftElement.innerText = "0";
             }
         }
 
