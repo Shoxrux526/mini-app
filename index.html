@@ -281,9 +281,18 @@
         console.log("Telegram Web App initialized:", tg);
 
         // Foydalanuvchi ma'lumotlarini olish
-        const user = tg.initDataUnsafe.user;
-        const userId = user ? user.id : null;
-        console.log("User ID:", userId);
+        let userId;
+        try {
+            const user = tg.initDataUnsafe?.user;
+            userId = user?.id || null;
+            console.log("User ID:", userId);
+            if (!userId) {
+                console.warn("User ID could not be retrieved from tg.initDataUnsafe.user");
+            }
+        } catch (error) {
+            console.error("Error retrieving user ID:", error);
+            userId = null;
+        }
 
         // Sahifalarni boshqarish
         const subscriptionPage = document.getElementById("subscription-page");
@@ -365,7 +374,7 @@
 
             // Click API’ga so‘rov yuborish uchun ma'lumotlarni tayyorlash
             const paymentData = {
-                user_id: userId,
+                user_id: userId,  // userId o‘zgaruvchisini ishlatamiz
                 amount: "67000",  // 67,000 UZS
                 card_number: cardNumber.replace(/\s/g, ""),
                 card_expiry: cardExpiry,
