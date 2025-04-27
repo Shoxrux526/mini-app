@@ -157,6 +157,7 @@
                 try {
                     Telegram.WebApp.sendData('subscribe');
                     console.log("Obuna bo‘lish tugmasi bosildi, ma'lumot yuborildi: subscribe");
+                    Telegram.WebApp.close(); // Mini App oynasini yopish
                 } catch (e) {
                     console.error("Obuna bo‘lish tugmasi ishlamayapti:", e);
                 }
@@ -166,6 +167,7 @@
                 try {
                     Telegram.WebApp.sendData('subscribe');
                     console.log("Obunani uzaytirish tugmasi bosildi, ma'lumot yuborildi: subscribe");
+                    Telegram.WebApp.close(); // Mini App oynasini yopish
                 } catch (e) {
                     console.error("Obunani uzaytirish tugmasi ishlamayapti:", e);
                 }
