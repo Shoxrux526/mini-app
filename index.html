@@ -4,39 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parallel Muhit</title>
-    <!-- Telegram Web App scriptini qo‘lda yuklash -->
+    <!-- Telegram Web App script -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
+            padding: 0;
+            background-color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .container {
             max-width: 600px;
-            margin: 0 auto;
-            background-color: #fff;
+            width: 100%;
+            background-color: #ffffff;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
         }
         h1 {
             font-size: 24px;
-            margin-bottom: 10px;
+            font-weight: 600;
+            color: #000000;
+            margin: 0 0 15px 0;
+            text-align: left;
+        }
+        h2 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #000000;
+            margin: 0 0 5px 0;
+            text-align: left;
+        }
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000000;
+            margin: 0 0 15px 0;
+            text-align: left;
         }
         .subscription-status {
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
             margin-bottom: 20px;
-            text-align: center;
+            text-align: left;
+        }
+        .subscription-status p {
+            margin: 0;
+            font-size: 16px;
+            color: #606770;
+            font-weight: 400;
+        }
+        .subscription-status span {
+            color: #000000;
+            font-weight: 600;
+            font-size: 24px;
+            display: block;
+            margin-top: 5px;
         }
         .renew-section {
             margin-bottom: 20px;
         }
         .renew-section p {
-            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #000000;
+            font-weight: 600;
+            margin: 0 0 15px 0;
         }
         .renew-buttons {
             display: flex;
@@ -45,26 +82,30 @@
         button {
             padding: 10px;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 16px;
-        }
-        .yes-btn, .continue-btn, .get-code-btn {
-            background-color: #2c3e50;
-            color: white;
+            font-weight: 500;
+            box-sizing: border-box;
             width: 100%;
         }
+        .yes-btn, .continue-btn, .get-code-btn {
+            background-color: #1c2526;
+            color: white;
+        }
         .no-btn {
-            background-color: #ecf0f1;
-            color: #2c3e50;
+            background-color: #ffffff;
+            color: #606770;
+            border: 1px solid #ccd0d5;
         }
         .options {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
         .options li {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+            border-bottom: 1px solid #e4e6e8;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -75,43 +116,62 @@
         }
         .options li span {
             font-size: 16px;
+            color: #000000;
+            font-weight: 400;
         }
         .options li .arrow {
             font-size: 16px;
+            color: #606770;
         }
         .payment-details {
             margin-bottom: 20px;
         }
-        .payment-details h2 {
-            font-size: 28px;
-            color: #2c3e50;
-        }
         .payment-details ul {
             list-style: none;
             padding: 0;
+            margin: 15px 0;
         }
         .payment-details ul li {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             margin-bottom: 10px;
+            font-size: 14px;
+            color: #606770;
+            line-height: 1.4;
         }
         .payment-details ul li::before {
             content: "✔";
-            color: #2c3e50;
-            margin-right: 10px;
+            color: #1c2526;
+            margin-right: 8px;
+            font-size: 16px;
         }
         .payment-methods {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 10px;
             margin-bottom: 20px;
         }
         .payment-method {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            padding: 10px;
+            border: 1px solid #ccd0d5;
+            border-radius: 10px;
         }
         .payment-method input {
-            margin-right: 5px;
+            margin: 0;
+            width: 20px;
+            height: 20px;
+        }
+        .payment-method span {
+            font-size: 14px;
+            color: #000000;
+            font-weight: 400;
+        }
+        .payment-method img {
+            width: 30px;
+            height: auto;
         }
         .card-inputs {
             margin-bottom: 20px;
@@ -119,17 +179,24 @@
         .card-inputs label {
             display: block;
             margin-bottom: 5px;
+            font-size: 16px;
+            color: #000000;
+            font-weight: 600;
         }
         .card-inputs input {
             width: 100%;
             padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #2c3e50;
-            border-radius: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccd0d5;
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
         }
         .card-inputs p {
             font-size: 12px;
-            color: #666;
+            color: #606770;
+            margin: 0;
+            line-height: 1.4;
         }
         .hidden {
             display: none;
@@ -141,7 +208,9 @@
     <div id="subscription-page" class="container">
         <h1>Parallel Muhit</h1>
         <div class="subscription-status">
-            <p>Obuna tugashiga <span id="days-left">0</span> kun</p>
+            <p>Obuna tugashiga</p>
+            <span id="days-left">0</span>
+            <p>kun</p>
         </div>
         <div class="renew-section">
             <p>Obunani yangilaysizmi?</p>
@@ -151,35 +220,38 @@
             </div>
         </div>
         <ul class="options">
-            <li><span>Ma'lumotlarni o'zgartirish</span><span class="arrow">→</span></li>
-            <li><span>To‘lovlar tarixi</span><span class="arrow">→</span></li>
-            <li><span>Shartnoma</span><span class="arrow">→</span></li>
-            <li><span>FAQ</span><span class="arrow">→</span></li>
-            <li><span>Aloqa</span><span class="arrow">→</span></li>
+            <li><span>Ma'lumotlarni o'zgartirish</span><span class="arrow">›</span></li>
+            <li><span>To‘lovlar tarixi</span><span class="arrow">›</span></li>
+            <li><span>Shartnoma</span><span class="arrow">›</span></li>
+            <li><span>FAQ</span><span class="arrow">›</span></li>
+            <li><span>Aloqa</span><span class="arrow">›</span></li>
         </ul>
     </div>
 
     <!-- Ikkinchi sahifa: To‘lov detallari -->
     <div id="payment-details-page" class="container hidden">
         <h1>Obuna narxi</h1>
+        <h2>67 000 UZS</h2>
+        <h3>Parallel muhit</h3>
         <div class="payment-details">
-            <h2>67 000 UZS</h2>
-            <h3>Parallel muhit</h3>
             <ul>
-                <li>Eksklyuziv kontent</li>
-                <li>Parallel muhit</li>
-                <li>Haftada 2 marta yangi maqolalar</li>
+                <li>Eksklyuziv kontent<br>Matnlar, savol-javoblar va rivojlanishga yordam beradigan videolar</li>
+                <li>Parallel muhit<br>Fikrlash va o‘z ish istagidagi odamlar bilan muloqot qilish imkoni.</li>
+                <li>Haftada 2 marta yangi maqolalar<br>Har dushanba va payshanba kunlari rivojlanish uchun foydali maqolalar.</li>
             </ul>
         </div>
+        <h3>To‘lov turi</h3>
         <div class="payment-methods">
             <div class="payment-method">
                 <input type="radio" name="payment-method" value="visa" checked>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Visa_Logo.png" alt="Visa" width="30">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Visa_Logo.png" alt="Visa">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" width="30">
                 <span>Chet-el kartasi</span>
             </div>
             <div class="payment-method">
                 <input type="radio" name="payment-method" value="uzcard">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/4/47/Uzcard_logo.png" alt="Uzcard" width="30">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/47/Uzcard_logo.png" alt="Uzcard">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Humo_card_logo.png" alt="Humo" width="30">
                 <span>UZCARD / HUMO</span>
             </div>
             <div class="payment-method">
@@ -192,7 +264,7 @@
 
     <!-- Uchinchi sahifa: Karta ma'lumotlari kiritish -->
     <div id="card-input-page" class="container hidden">
-        <h1>Bank kartasi ma'lumotlarini kiriting</td>
+        <h1>Bank kartasi ma'lumotlarini kiriting</h1>
         <div class="card-inputs">
             <label for="card-number">Karta raqami</label>
             <input type="text" id="card-number" placeholder="0000 0000 0000 0000" maxlength="19">
