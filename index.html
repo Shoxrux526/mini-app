@@ -47,9 +47,10 @@
             cursor: pointer;
             font-size: 16px;
         }
-        .yes-btn {
+        .yes-btn, .continue-btn, .get-code-btn {
             background-color: #2c3e50;
             color: white;
+            width: 100%;
         }
         .no-btn {
             background-color: #ecf0f1;
@@ -76,10 +77,66 @@
         .options li .arrow {
             font-size: 16px;
         }
+        .payment-details {
+            margin-bottom: 20px;
+        }
+        .payment-details h2 {
+            font-size: 28px;
+            color: #2c3e50;
+        }
+        .payment-details ul {
+            list-style: none;
+            padding: 0;
+        }
+        .payment-details ul li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .payment-details ul li::before {
+            content: "✔";
+            color: #2c3e50;
+            margin-right: 10px;
+        }
+        .payment-methods {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .payment-method {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .payment-method input {
+            margin-right: 5px;
+        }
+        .card-inputs {
+            margin-bottom: 20px;
+        }
+        .card-inputs label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .card-inputs input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #2c3e50;
+            border-radius: 5px;
+        }
+        .card-inputs p {
+            font-size: 12px;
+            color: #666;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Birinchi sahifa: Obuna holati -->
+    <div id="subscription-page" class="container">
         <h1>Parallel Muhit</h1>
         <div class="subscription-status">
             <p>Obuna tugashiga <span id="days-left">0</span> kun</p>
@@ -87,7 +144,7 @@
         <div class="renew-section">
             <p>Obunani yangilaysizmi?</p>
             <div class="renew-buttons">
-                <button class="yes-btn" onclick="renewSubscription()">Ha</button>
+                <button class="yes-btn" onclick="showPaymentDetails()">Ha</button>
                 <button class="no-btn" onclick="closeMiniApp()">Yo‘q</button>
             </div>
         </div>
@@ -100,6 +157,50 @@
         </ul>
     </div>
 
+    <!-- Ikkinchi sahifa: To‘lov detallari -->
+    <div id="payment-details-page" class="container hidden">
+        <h1>Obuna narxi</h1>
+        <div class="payment-details">
+            <h2>67 000 UZS</h2>
+            <h3>Parallel muhit</h3>
+            <ul>
+                <li>Eksklyuziv kontent</li>
+                <li>Parallel muhit</li>
+                <li>Haftada 2 marta yangi maqolalar</li>
+            </ul>
+        </div>
+        <div class="payment-methods">
+            <div class="payment-method">
+                <input type="radio" name="payment-method" value="visa" checked>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Visa_Logo.png" alt="Visa" width="30">
+                <span>Chet-el kartasi</span>
+            </div>
+            <div class="payment-method">
+                <input type="radio" name="payment-method" value="uzcard">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/47/Uzcard_logo.png" alt="Uzcard" width="30">
+                <span>UZCARD / HUMO</span>
+            </div>
+            <div class="payment-method">
+                <input type="radio" name="payment-method" value="click">
+                <span>Click orqali</span>
+            </div>
+        </div>
+        <button class="continue-btn" onclick="showCardInput()">Davom etish</button>
+    </div>
+
+    <!-- Uchinchi sahifa: Karta ma'lumotlari kiritish -->
+    <div id="card-input-page" class="container hidden">
+        <h1>Bank kartasi ma'lumotlarini kiriting</h1>
+        <div class="card-inputs">
+            <label for="card-number">Karta raqami</label>
+            <input type="text" id="card-number" placeholder="0000 0000 0000 0000" maxlength="19">
+            <label for="card-expiry">MM/YY</label>
+            <input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5">
+            <p>Xavfsizlik maqsadida sizning bank kartangiz ma'lumotlari Click xizmatining serverlarida saqlanadi. Sizning shaxsingizga oid hech qanday ma'lumot saqlanmaydi. Click o‘ferta</p>
+        </div>
+        <button class="get-code-btn" onclick="requestPaymentCode()">Kodni olish</button>
+    </div>
+
     <script>
         // Telegram Web App scriptini ulash
         const tg = window.Telegram.WebApp;
@@ -107,6 +208,11 @@
         // Foydalanuvchi ma'lumotlarini olish
         const user = tg.initDataUnsafe.user;
         const userId = user ? user.id : null;
+
+        // Sahifalarni boshqarish
+        const subscriptionPage = document.getElementById("subscription-page");
+        const paymentDetailsPage = document.getElementById("payment-details-page");
+        const cardInputPage = document.getElementById("card-input-page");
 
         // Obuna ma'lumotlarini serverdan olish
         async function fetchSubscriptionData() {
@@ -119,9 +225,39 @@
             }
         }
 
-        // Obunani yangilash tugmasi
-        function renewSubscription() {
-            tg.sendData("subscribe");
+        // To‘lov detallari sahifasini ko‘rsatish
+        function showPaymentDetails() {
+            subscriptionPage.classList.add("hidden");
+            paymentDetailsPage.classList.remove("hidden");
+        }
+
+        // Karta ma'lumotlari kiritish sahifasini ko‘rsatish
+        function showCardInput() {
+            paymentDetailsPage.classList.add("hidden");
+            cardInputPage.classList.remove("hidden");
+        }
+
+        // To‘lov kodini so‘rash
+        function requestPaymentCode() {
+            const cardNumber = document.getElementById("card-number").value;
+            const cardExpiry = document.getElementById("card-expiry").value;
+
+            if (!cardNumber || !cardExpiry) {
+                alert("Iltimos, karta ma'lumotlarini to‘ldiring!");
+                return;
+            }
+
+            // Click API’ga so‘rov yuborish uchun ma'lumotlarni tayyorlash
+            const paymentData = {
+                user_id: userId,
+                amount: "67000",  // 67,000 UZS
+                card_number: cardNumber.replace(/\s/g, ""),
+                card_expiry: cardExpiry,
+                payment_method: document.querySelector('input[name="payment-method"]:checked').value
+            };
+
+            // Botga ma'lumot yuborish
+            tg.sendData(JSON.stringify(paymentData));
             tg.close();  // Mini App’ni yopish
         }
 
@@ -132,6 +268,21 @@
 
         // Sahifa yuklanganda obuna ma'lumotlarini olish
         window.onload = fetchSubscriptionData;
+
+        // Karta raqami va muddatni formatlash
+        document.getElementById("card-number").addEventListener("input", function(e) {
+            let value = e.target.value.replace(/\D/g, "");
+            value = value.replace(/(\d{4})/g, "$1 ").trim();
+            e.target.value = value;
+        });
+
+        document.getElementById("card-expiry").addEventListener("input", function(e) {
+            let value = e.target.value.replace(/\D/g, "");
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + "/" + value.substring(2);
+            }
+            e.target.value = value;
+        });
     </script>
 </body>
 </html>
