@@ -216,23 +216,31 @@
         const paymentDetailsPage = document.getElementById("payment-details-page");
         const cardInputPage = document.getElementById("card-input-page");
 
-        // Obuna ma'lumotlarini serverdan olish
-        async function fetchSubscriptionData() {
-            if (!userId) {
-                console.error("User ID not found");
-                document.getElementById("days-left").innerText = "0";
-                return;
-            }
-            try {
-                const response = await fetch(`http://localhost:5000/api/subscription?user_id=${userId}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+        // URL parametridan subscription_data ni olish
+        function getSubscriptionDataFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const data = urlParams.get("data");
+            if (data) {
+                try {
+                    const decodedData = decodeURIComponent(data);
+                    const subscriptionData = JSON.parse(decodedData);
+                    console.log("Subscription data from URL:", subscriptionData);
+                    return subscriptionData;
+                } catch (error) {
+                    console.error("Error parsing subscription data from URL:", error);
+                    return null;
                 }
-                const data = await response.json();
-                console.log("Subscription data:", data);
-                document.getElementById("days-left").innerText = data.days_left || 0;
-            } catch (error) {
-                console.error("Obuna ma'lumotlarini olishda xatolik:", error);
+            }
+            return null;
+        }
+
+        // Obuna holatini ko‘rsatish
+        function displaySubscriptionData() {
+            const subscriptionData = getSubscriptionDataFromURL();
+            if (subscriptionData && subscriptionData.days_left !== undefined) {
+                document.getElementById("days-left").innerText = subscriptionData.days_left;
+            } else {
+                console.error("Subscription data not found in URL parameters");
                 document.getElementById("days-left").innerText = "0";
             }
         }
@@ -300,10 +308,10 @@
             }
         }
 
-        // Sahifa yuklanganda obuna ma'lumotlarini olish
+        // Sahifa yuklanganda obuna ma'lumotlarini ko‘rsatish
         window.onload = function() {
-            console.log("Window loaded, fetching subscription data...");
-            fetchSubscriptionData();
+            console.log("Window loaded, displaying subscription data...");
+            displaySubscriptionData();
         };
 
         // Karta raqami va muddatni formatlash
