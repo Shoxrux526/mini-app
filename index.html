@@ -204,10 +204,12 @@
     <script>
         // Telegram Web App scriptini ulash
         const tg = window.Telegram.WebApp;
+        console.log("Telegram Web App initialized:", tg);
 
         // Foydalanuvchi ma'lumotlarini olish
         const user = tg.initDataUnsafe.user;
         const userId = user ? user.id : null;
+        console.log("User ID:", userId);
 
         // Sahifalarni boshqarish
         const subscriptionPage = document.getElementById("subscription-page");
@@ -216,29 +218,38 @@
 
         // Obuna ma'lumotlarini serverdan olish
         async function fetchSubscriptionData() {
+            if (!userId) {
+                console.error("User ID not found");
+                return;
+            }
             try {
-                const response = await fetch(`/api/subscription?user_id=${userId}`);
+                const response = await fetch(`http://localhost:5000/api/subscription?user_id=${userId}`);
                 const data = await response.json();
+                console.log("Subscription data:", data);
                 document.getElementById("days-left").innerText = data.days_left || 0;
             } catch (error) {
                 console.error("Obuna ma'lumotlarini olishda xatolik:", error);
+                document.getElementById("days-left").innerText = "0";
             }
         }
 
         // To‘lov detallari sahifasini ko‘rsatish
         function showPaymentDetails() {
+            console.log("Show payment details clicked");
             subscriptionPage.classList.add("hidden");
             paymentDetailsPage.classList.remove("hidden");
         }
 
         // Karta ma'lumotlari kiritish sahifasini ko‘rsatish
         function showCardInput() {
+            console.log("Show card input clicked");
             paymentDetailsPage.classList.add("hidden");
             cardInputPage.classList.remove("hidden");
         }
 
         // To‘lov kodini so‘rash
         function requestPaymentCode() {
+            console.log("Request payment code clicked");
             const cardNumber = document.getElementById("card-number").value;
             const cardExpiry = document.getElementById("card-expiry").value;
 
@@ -257,17 +268,31 @@
             };
 
             // Botga ma'lumot yuborish
-            tg.sendData(JSON.stringify(paymentData));
-            tg.close();  // Mini App’ni yopish
+            try {
+                tg.sendData(JSON.stringify(paymentData));
+                console.log("Payment data sent:", paymentData);
+                tg.close();  // Mini App’ni yopish
+            } catch (error) {
+                console.error("Error sending payment data:", error);
+                alert("To‘lov ma'lumotlarini yuborishda xatolik yuz berdi!");
+            }
         }
 
         // Mini App’ni yopish
         function closeMiniApp() {
-            tg.close();
+            console.log("Close Mini App clicked");
+            try {
+                tg.close();
+            } catch (error) {
+                console.error("Error closing Mini App:", error);
+            }
         }
 
         // Sahifa yuklanganda obuna ma'lumotlarini olish
-        window.onload = fetchSubscriptionData;
+        window.onload = function() {
+            console.log("Window loaded, fetching subscription data...");
+            fetchSubscriptionData();
+        };
 
         // Karta raqami va muddatni formatlash
         document.getElementById("card-number").addEventListener("input", function(e) {
