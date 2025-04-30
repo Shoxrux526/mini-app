@@ -89,7 +89,7 @@
             box-sizing: border-box;
             width: 100%;
         }
-        .yes-btn, .continue-btn, .get-code-btn {
+        .yes-btn, .continue-btn {
             background-color: #1c2526;
             color: white;
         }
@@ -173,31 +173,6 @@
             width: 30px;
             height: auto;
         }
-        .card-inputs {
-            margin-bottom: 20px;
-        }
-        .card-inputs label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 16px;
-            color: #000000;
-            font-weight: 600;
-        }
-        .card-inputs input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccd0d5;
-            border-radius: 10px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        .card-inputs p {
-            font-size: 12px;
-            color: #606770;
-            margin: 0;
-            line-height: 1.4;
-        }
         .hidden {
             display: none;
         }
@@ -259,20 +234,7 @@
                 <span>Click orqali</span>
             </div>
         </div>
-        <button class="continue-btn" onclick="showCardInput()">Davom etish</button>
-    </div>
-
-    <!-- Uchinchi sahifa: Karta ma'lumotlari kiritish -->
-    <div id="card-input-page" class="container hidden">
-        <h1>Bank kartasi ma'lumotlarini kiriting</h1>
-        <div class="card-inputs">
-            <label for="card-number">Karta raqami</label>
-            <input type="text" id="card-number" placeholder="0000 0000 0000 0000" maxlength="19">
-            <label for="card-expiry">MM/YY</label>
-            <input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5">
-            <p>Xavfsizlik maqsadida sizning bank kartangiz ma'lumotlari Click xizmatining serverlarida saqlanadi. Sizning shaxsingizga oid hech qanday ma'lumot saqlanmaydi. Click o‘ferta</p>
-        </div>
-        <button class="get-code-btn" onclick="requestPaymentCode()">Kodni olish</button>
+        <button class="continue-btn" onclick="requestTelegramPayment()">Davom etish</button>
     </div>
 
     <script>
@@ -281,23 +243,13 @@
         console.log("Telegram Web App initialized:", tg);
 
         // Foydalanuvchi ma'lumotlarini olish
-        let userId;
-        try {
-            const user = tg.initDataUnsafe?.user;
-            userId = user?.id || null;
-            console.log("User ID:", userId);
-            if (!userId) {
-                console.warn("User ID could not be retrieved from tg.initDataUnsafe.user");
-            }
-        } catch (error) {
-            console.error("Error retrieving user ID:", error);
-            userId = null;
-        }
+        const user = tg.initDataUnsafe.user;
+        const userId = user ? user.id : null;
+        console.log("User ID:", userId);
 
         // Sahifalarni boshqarish
         const subscriptionPage = document.getElementById("subscription-page");
         const paymentDetailsPage = document.getElementById("payment-details-page");
-        const cardInputPage = document.getElementById("card-input-page");
 
         // URL parametridan subscription_data ni olish
         function getSubscriptionDataFromURL() {
@@ -350,34 +302,12 @@
             }
         }
 
-        // Karta ma'lumotlari kiritish sahifasini ko‘rsatish
-        function showCardInput() {
-            console.log("Show card input clicked");
-            try {
-                paymentDetailsPage.classList.add("hidden");
-                cardInputPage.classList.remove("hidden");
-            } catch (error) {
-                console.error("Error showing card input:", error);
-            }
-        }
-
-        // To‘lov kodini so‘rash
-        function requestPaymentCode() {
-            console.log("Request payment code clicked");
-            const cardNumber = document.getElementById("card-number").value;
-            const cardExpiry = document.getElementById("card-expiry").value;
-
-            if (!cardNumber || !cardExpiry) {
-                alert("Iltimos, karta ma'lumotlarini to‘ldiring!");
-                return;
-            }
-
-            // Click API’ga so‘rov yuborish uchun ma'lumotlarni tayyorlash
+        // Telegram Payment API orqali to‘lov so‘rovini yuborish
+        function requestTelegramPayment() {
+            console.log("Request Telegram payment clicked");
             const paymentData = {
-                user_id: userId,  // userId o‘zgaruvchisini ishlatamiz
+                user_id: userId,
                 amount: "67000",  // 67,000 UZS
-                card_number: cardNumber.replace(/\s/g, ""),
-                card_expiry: cardExpiry,
                 payment_method: document.querySelector('input[name="payment-method"]:checked').value
             };
 
@@ -407,21 +337,6 @@
             console.log("Window loaded, displaying subscription data...");
             displaySubscriptionData();
         };
-
-        // Karta raqami va muddatni formatlash
-        document.getElementById("card-number").addEventListener("input", function(e) {
-            let value = e.target.value.replace(/\D/g, "");
-            value = value.replace(/(\d{4})/g, "$1 ").trim();
-            e.target.value = value;
-        });
-
-        document.getElementById("card-expiry").addEventListener("input", function(e) {
-            let value = e.target.value.replace(/\D/g, "");
-            if (value.length >= 2) {
-                value = value.substring(0, 2) + "/" + value.substring(2);
-            }
-            e.target.value = value;
-        });
     </script>
 </body>
 </html>
